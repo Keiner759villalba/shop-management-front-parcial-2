@@ -1,6 +1,6 @@
-function getUsers() {
-    document.getElementById('cardHeader').innerHTML = '<h4>Users List</h4>'
-    fetch('https://fakestoreapi.com/users',
+function getCarts() {
+    document.getElementById('cardHeader').innerHTML = '<h4>Carts List</h4>'
+    fetch('https://fakestoreapi.com/carts',
         {
             method: 'GET',
             headers: {
@@ -21,38 +21,37 @@ function getUsers() {
         })
         .then(data => {
             if (data.status === 200) {
-                let listUsers = `
+                let listCarts = `
                 <table class="table">
                     <thead>
                         <tr>
                         <th scope="col">#</th>
-                        <th scope="col">First Name</th>
-                        <th scope="col">Last Name</th>
-                        <th scope="col">Action</th>
+                        <th scope="col">User ID</th>
+                        <th scope="col">Date</th>
                         </tr>
                     </thead>
                     <tbody>
                 `
-                data.body.forEach((user, index) => {
-                    listUsers += `
+                data.body.forEach((cart, index) => {
+                    listCarts += `
                         <tr>
                             <th scope="row">${index + 1}</th>
-                            <td>${user.name.firstname}</td>
-                            <td>${user.name.lastname}</td>
-                            <td><button class="btn btn-primary" onclick="getUser('${user.id}')">View</button></td>
+                            <td>${cart.userId}</td>
+                            <td>${cart.date}</td>
+                            <td><button class="btn btn-primary" onclick="getCart('${cart.id}')">View</button></td>
                         </tr>
                     `
                 })
-                document.getElementById('info').innerHTML = listUsers
+                document.getElementById('info').innerHTML = listCarts
             } else {
-                document.getElementById('info').innerHTML = '<h3>Users not found</h3>'
+                document.getElementById('info').innerHTML = '<h3>Cart not found</h3>'
             }
         });
 }
 
-function getUser(id) {
-    document.getElementById('cardHeader').innerHTML = '<h4>Users List</h4>'
-    fetch(`https://fakestoreapi.com/users/${id}`,
+function getCart(id) {
+    document.getElementById('cardHeader').innerHTML = '<h4>Carts List</h4>'
+    fetch(`https://fakestoreapi.com/carts/${id}`,
         {
             method: 'GET',
             headers: {
@@ -73,17 +72,17 @@ function getUser(id) {
         })
         .then((data) => {
             if (data.status === 200) {
-                showUserInfo(data.body)
+                showCartInfo(data.body)
             }
             else {
-                document.getElementById('info').innerHTML = '<h3>User not found</h3>'
+                document.getElementById('info').innerHTML = '<h3>Cart not found</h3>'
             }
         })
 }
 
-function showUserInfo(user) {
-    const modalUser = `
-    <div class="modal fade" id="modalUser" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+function showCartInfo(user) {
+    const modalCart = `
+    <div class="modal fade" id="modalCart" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
             <div class="modal-header">
@@ -93,14 +92,18 @@ function showUserInfo(user) {
             <div class="modal-body">
                 <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">User Info</h5>
-                    <p class="card-text"><strong>ID : </strong>${user.id}</p>
-                    <p class="card-text"><strong>Name : </strong>${user.name.firstname} ${user.name.lastname}</p>
-                    <p class="card-text"><strong>Username : </strong>${user.username}</p>
-                    <p class="card-text"><strong>Password : </strong>${user.password}</p>
-                    <p class="card-text"><strong>Email : </strong>${user.email}</p>
-                    <p class="card-text"><strong>Phone : </strong>${user.phone}</p>
-                    <p class="card-text"><strong>Address : </strong>${user.address.city}, ${user.address.street}, ${user.address.number}</p>
+                    <h5 class="card-title">Cart Info</h5>
+                    <p class="card-text"><strong>User ID: </strong>${user.userId}</p>
+                    <p class="card-text"><strong>Date: </strong>${user.date}</p>
+                    <p class="card-text"><strong>Products: </strong></p>
+                    <ul>
+                        ${user.products.map(product => `
+                            <li>
+                                <p><strong>Product ID: </strong>${product.productId}</p>
+                                <p><strong>Quantity: </strong>${product.quantity}</p>
+                            </li>
+                        `).join('')}
+                    </ul>
                 </div>
                 </div>
             </div>
@@ -111,7 +114,7 @@ function showUserInfo(user) {
         </div>
         </div>
     `
-    document.getElementById('showModal').innerHTML = modalUser
-    const modal = new bootstrap.Modal(document.getElementById('modalUser'))
+    document.getElementById('showModal').innerHTML = modalCart
+    const modal = new bootstrap.Modal(document.getElementById('modalCart'))
     modal.show()
 }
